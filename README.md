@@ -2,8 +2,6 @@
 
 > **An intelligent wellness companion that bridges the gap between digital work and physical well-being.**
 
-![Nook Banner](https://via.placeholder.com/1000x300?text=Nook+-+Your+Comfort+Corner+|+Microsoft+Imagine+Cup)
-
 ## 📖 About The Project
 **Nook** is a web-based mobile application designed to monitor your physical environment and mental state in real-time. By leveraging device sensors (accelerometer & gyroscope) and Microsoft Azure AI, Nook detects posture fatigue, movement anomalies, and anxiety-induced jitter, transforming your workspace into a true "comfort corner."
 
