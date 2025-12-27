@@ -12,6 +12,7 @@ app.use(express.json()); //to parse body of incoming POST request
 // Requiring routes
 const userRouter = require("./routes/user");
 const sensorRouter = require("./routes/sensor");
+const alertRouter = require("./routes/alert");
 
 
 // Starting the server by connecting Database and then starting to listen to port
@@ -24,6 +25,7 @@ const startServer = async()=>{
         // Routes
         app.use("/api/v1/users",userRouter); // User router
         app.use("/api/v1/motionData",sensorRouter); // Sensorary Data router
+        app.use("/api/v1/alerts",alertRouter); // Alerts router
         
         // Listening to port
         const port = 3000 || process.env.PORT;
