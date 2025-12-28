@@ -7,14 +7,18 @@
     "start": "nodemon app.js"
   },
   "keywords": [],
-  "author": "Ashutosh Tiwari & Mokshita Rana",
+  "author": "Mokshita Rana & Ashutosh Tiwari",
   "license": "ISC",
   "description": "Nook is a web app that allows users to journal their thoughts and feelings in a private and secure manner through their voice. Users can record their voice entries, which are then transcribed into text using advanced speech-to-text technology. The app ensures that all entries are encrypted and stored securely, providing users with peace of mind knowing that their personal reflections are protected. Nook also keeps track of users mood over time using their daily journals and also keeps tracks of their mobile sensor to analyse depression and anxiety in users and can alert their emergency contacts if needed.",
   "devDependencies": {
     "nodemon": "^3.1.11"
   },
   "dependencies": {
+    "@azure/ai-text-analytics": "^5.1.0",
+    "@azure/identity": "^4.13.0",
+    "@azure/openai": "^2.0.0",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
@@ -22,6 +26,8 @@
     "express-rate-limit": "^8.2.1",
     "http-status-codes": "^2.3.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.0.2"
+    "microsoft-cognitiveservices-speech-sdk": "^1.47.0",
+    "mongoose": "^9.0.2",
+    "openai": "^6.15.0"
   }
 }
