@@ -17,23 +17,21 @@ const uploadJournal = async (req, res) => {
         // 1. Immediately convert to Buffer (No waiting)
         const audioBuffer = Buffer.from(audioBase64.split(';base64,').pop(), 'base64');
 
-        // 🚀 STEP 1: Racing Transcription and Cloudinary
         // We start both at once. The transcript is the 'Key' to step 2.
         const [transcript, uploadResponse] = await Promise.all([
             convertSpeechToText(audioBuffer),
             cloudinary.uploader.upload(audioBase64, { resource_type: "video" })
         ]);
-        
+        // Printing the time of uploading of transcript and cloudinary upload
         console.timeLog("⏱️ Total Pipeline", "Transcript & Cloudinary Done");
 
-        // 🚀 STEP 2: Racing Sentiment and AI Response
         // We trigger these the moment the transcript returns.
         // We don't wait for Sentiment to finish before starting the AI.
         const [sentimentScore, aiResponse] = await Promise.all([
             analyzeSentiment(transcript),
             generateAIResponse(transcript) 
         ]);
-
+        // Printing the final time
         console.timeEnd("⏱️ Total Pipeline");
 
         // 2. Final DB Save
@@ -46,12 +44,11 @@ const uploadJournal = async (req, res) => {
             duration,
             publicId:uploadResponse.public_id
         });
-
-        res.status(201).json({ journal });
-
+        //  Sending back response
+        res.status(StatusCodes.CREATED).json({ journal });
     } catch (error) {
-        console.error("Pipeline Error:", error);
-        res.status(500).json({ message: "Error", error: error.message });
+        // Sending out error
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error", error: error.message });
     }
 };
 // ---------------------------------------------------------------------------- GET ALL JOURNAL --------------------------------------------------------------------------------
