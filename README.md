@@ -18,17 +18,18 @@ Unlike standard fitness trackers, Nook focuses on **"Ambient Wellness"**—monit
 
 ### Backend
 * **Runtime:** Node.js & Express.js
-* **Database:** MongoDB (Time Series Data optimized)
+* **Database:** MongoDB, Cloudinary
 * **Authentication:** JWT & Bcryptjs
 * **Validation:** Mongoose Middleware
 
 ### AI & Cloud (Microsoft Azure)
 * ☁️ **Azure Anomaly Detector:** For identifying motion irregularities.
 * ☁️ **Azure AI Speech:** For converting voice journals to text.
-* ☁️ **Azure OpenAI:** For generating empathetic, context-aware user feedback.
+* ☁️ **Gemini API:** For generating empathetic, context-aware user feedback.
+* ☁️ **Azure Communication Services:** For sending alerts to emergency contacts.
 
 ### Frontend
-* **Core:** HTML5 / JavaScript (DeviceMotion API)
+* **Core:** HTML5 / CSS / Bootstrap5 / JavaScript
 * **Data Handling:** Client-side "Bucket" buffering to optimize network requests.
 
 ## ⚙️ Architecture Workflow
@@ -41,7 +42,7 @@ Unlike standard fitness trackers, Nook focuses on **"Ambient Wellness"**—monit
 ## 🚀 Getting Started
 
 ### Prerequisites
-* Node.js (v14+)
+* Node.js
 * MongoDB (Local or Atlas URI)
 
 
@@ -50,7 +51,7 @@ Unlike standard fitness trackers, Nook focuses on **"Ambient Wellness"**—monit
 1. **Clone the repository**
    ```bash
    git clone [https://github.com/yourusername/nook-backend.git](https://github.com/yourusername/nook-backend.git)
-   cd nook-backend
+   cd Project
    ```
 
 2. **Install dependencies**
@@ -65,7 +66,14 @@ Unlike standard fitness trackers, Nook focuses on **"Ambient Wellness"**—monit
    MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_super_secret_key_32_chars_min
    JWT_LIFETIME=30d
-
+   CLOUDINARY_CLOUD_NAME= your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY= your_cloudinary_api_key
+   CLOUDINARY_API_SECRET= your_cloudinary_api_secret
+   AZURE_SPEECH_KEY = your_azure_speech_key
+   AZURE_SPEECH_REGION = your_azure_speech_region
+   AZURE_LANGUAGE_KEY = your_azure_language_key
+   AZURE_LANGUAGE_ENDPOINT =   your_azure_language_endpoint
+   GEMINI_API_KEY = your_gemini_api_key
    ```
 
 4. **Run the Server**
