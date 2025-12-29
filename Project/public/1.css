@@ -1,0 +1,356 @@
+/* ---------- 1. THEME VARIABLES & RESET ---------- */
+:root {
+  --sage-dark: #516e61;
+  --sage-medium: #6B9080;
+  --sage-light: #A4C3B2;
+  --cream: #F6FFF8;
+  --mint: #EAF4F4;
+  --white: #ffffff;
+  --text-main: #2D4439;
+  --transition-smooth: all 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--cream);
+  color: var(--text-main);
+  overflow: hidden; 
+}
+
+/* ---------- 2. SPLASH / LOADING SCREEN ---------- */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--mint);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 1s ease;
+}
+
+#splash-screen.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.webname {
+  font-family: 'Georgia', serif;
+  font-size: clamp(3rem, 8vw, 5rem);
+  color: var(--sage-dark);
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.splash-content p {
+  font-size: 1.1rem;
+  color: var(--sage-medium);
+  letter-spacing: 1px;
+}
+
+.blob-outer-container {
+  position: absolute;
+  inset: 0;
+  filter: blur(80px);
+  z-index: -1;
+  opacity: 0.4;
+}
+
+.blob {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    inset: 0;
+    margin: auto;
+    background: conic-gradient(from 0deg, #8cb3cb, #b4e8dd, #e2e6e5, #d9ecec, #c5deca, #bdd9b5);
+    animation: spinBlob 8s linear infinite;
+}
+
+@keyframes spinBlob {
+    0% {
+        transform: rotate(0deg) scale(2);
+    }
+
+    100% {
+        transform: rotate(1turn) scale(2);
+    }
+}
+
+
+.blob-inner-container {
+  width: 100%;
+  height: 100%;
+  background: conic-gradient(from 0deg, #cbf7ee, #e2e6e5, #bdd9b5);
+}
+
+/* ---------- 3. NAVIGATION ---------- */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 60px;
+  z-index: 1000;
+  background: rgba(246, 255, 248, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+nav h1 {
+  font-family: 'Georgia', serif;
+  color: var(--sage-dark);
+  font-size: 1.8rem;
+  font-weight: 400;
+}
+
+.nav-links a {
+  margin-left: 30px;
+  text-decoration: none;
+  color: var(--text-main);
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  background: var(--sage-light);
+  color: white;
+}
+
+.webname {
+  animation: glow 3.5s;
+
+}
+@keyframes glow {
+  0% { color: #0a1e0e; }
+  25% { color: #4a8a6f; }
+  50% { color: #eaf0eb; }
+   100% { color: #2d5834; }
+
+}
+
+
+/* ---------- 4. VERTICAL SLIDER ---------- */
+.slider {
+  position: relative;
+  height: 300vh;
+  transition: var(--transition-smooth);
+}
+
+.slide {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 80px;
+}
+
+.slide1 { background-color: var(--cream); }
+.slide2 { background-color: var(--mint); }
+.slide3 { 
+  background-color: var(--sage-light);
+  background-image: linear-gradient(rgba(164, 195, 178, 0.85), rgba(164, 195, 178, 0.85)), url('3.png');
+  background-size: cover;
+  background-position: center;
+}
+
+/* ---------- 5. SLIDE CONTENT (Symmetry & Space) ---------- */
+.slide1-wrapper, .slide2-wrapper {
+  max-width: 1100px;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
+
+.slide1-content, .slide2-content {
+  flex: 1;
+}
+
+h2 {
+  font-family: 'Georgia', serif;
+  font-size: clamp(2.5rem, 5vw, 3.8rem);
+  color: var(--sage-dark);
+  margin-bottom: 20px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+.sub-heading {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  color: var(--sage-medium);
+  margin-bottom: 20px;
+}
+
+.support-text {
+  font-size: 1rem;
+  color: var(--text-main);
+  opacity: 0.7;
+  padding-left: 15px;
+  border-left: 2px solid var(--sage-light);
+}
+
+.slide1-image, .slide2-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.slide1-image img, .slide2-image img, .circle-image img {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 70%; /* Soft pebble shape */
+  box-shadow: 0 15px 45px rgba(0,0,0,0.05);
+  transition: transform 0.5s ease;
+}
+
+/* ---------- 6. LOGIN & REGISTER (Animated Sections) ---------- */
+
+.login-box, .modal-box {
+  background: var(--white);
+  padding: 50px;
+  border-radius: 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+
+
+.login-box h3, .modal-box h3 {
+  font-family: 'Georgia', serif;
+  font-size: 1.8rem;
+  color: var(--sage-dark);
+  margin-bottom: 25px;
+}
+
+.login-box input, .modal-box input {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fdfdfd;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.login-box input:focus, .modal-box input:focus {
+  border-color: var(--sage-medium);
+}
+
+.login-box button, .modal-box button {
+  width: 100%;
+  padding: 16px;
+  background: var(--sage-medium);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.login-box button:hover, .modal-box button:hover {
+  background: var(--sage-dark);
+}
+
+/* ---------- 7. MODAL STYLING ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(81, 110, 97, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.close-text {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: var(--sage-medium);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.modal-box {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 360px;
+  margin: auto;
+  margin-top: 15vh;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ---------- 8.  RESPONSIVE ---------- */
+.hidden { display: none; }
+
+@media (max-width: 900px) {
+  nav { padding: 0 30px; }
+  
+  .slide1-wrapper, .slide2-wrapper {
+    flex-direction: column;
+    text-align: center;
+    gap: 30px;
+  }
+  
+  .slide1-image, .slide2-image {
+    order: -1;
+  }
+  
+  .slide1-image img, .slide2-image img {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .webname { font-size: 3rem; }
+  nav h1 { font-size: 1.5rem; }
+  .login-box { padding: 30px; }
+}
