@@ -99,16 +99,46 @@ function closeSensorModal() {
   if (modal) modal.classList.add("hidden");
 }
 
-function saveManualContact() {
-  const name = document.getElementById("contact-name").value;
-  const phone = document.getElementById("contact-phone").value;
 
-  if (!name || !phone) {
+//for emergency contact
+async function saveManualContact() {
+  const contactName = document.getElementById("contact-name").value;
+  const phoneNumber = document.getElementById("contact-phone").value;
+  const token = localStorage.getItem('token'); 
+  if (!contactName || !phoneNumber) {
     alert("Please fill in both fields.");
     return;
   }
 
-  localStorage.setItem("emergencyContact", JSON.stringify({ name, phone }));
-  document.getElementById("contact-modal").classList.add("hidden");
-  alert("Setup complete!");
+  // If there is no token
+  if (!token) {
+    alert("User not authenticated. Please login again.");
+    window.location.href = "index.html";
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:3000/api/v1/users/contacts', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify({ contactName, phoneNumber })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("emergencyContact", JSON.stringify({ contactName, phoneNumber }));
+      
+      document.getElementById("contact-modal").classList.add("hidden");
+      alert("Emergency contact added to your Nook!");
+    } else {
+      alert(data.msg || "Failed to save contact.");
+    }
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    alert("Server error. Please try again later.");
+  }
 }

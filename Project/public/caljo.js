@@ -19,16 +19,17 @@ let dataArray;
 
 async function setupAudio() {
     try {
-        // Request Microphone
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
-        // Setup Audio Context & Visualizer Nodes
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        // FORCE 16000Hz for Azure AI compatibility
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)({
+            sampleRate: 16000, 
+        });
+
         analyser = audioCtx.createAnalyser();
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-        // Setup Processor for raw WAV data
         processor = audioCtx.createScriptProcessor(4096, 1, 1);
         source = audioCtx.createMediaStreamSource(stream);
         
@@ -45,10 +46,9 @@ async function setupAudio() {
         startRecordingLogic();
     } catch (err) {
         console.error("Mic Error:", err);
-        alert("Microphone access is required to rant.");
+        alert("Microphone access is required.");
     }
 }
-
 function startRecordingLogic() {
     isRecording = true;
     leftChannel = [];
@@ -107,7 +107,7 @@ async function uploadToBackend(blob) {
         const token = localStorage.getItem('token'); 
 
         try {
-            const response = await fetch('/api/v1/journal', {
+            const response = await fetch('http://localhost:3000/api/v1/journal', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

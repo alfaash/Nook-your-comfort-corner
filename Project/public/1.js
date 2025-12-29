@@ -54,27 +54,73 @@ function goToSlide(index) {
   slider.style.transform = `translateY(-${index * 100}vh)`;
 }
 
-/* Login redirect */
-function login() {
-  window.location.href = "dashboard.html";
+/* AUTH LOGIC */
+
+// 1. REGISTRATION
+/* AUTH LOGIC */
+
+async function registerUser() {
+    const name = document.getElementById('reg-name').value;
+    const username = document.getElementById('reg-username').value;
+    const password = document.getElementById('reg-password').value;
+
+    if (!name || !username || !password) {
+        return alert("Please fill all fields");
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/users/register', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Registration successful! Now please login.");
+            closeLogin(); 
+            goToSlide(2); 
+        } else {
+            // Your controller might send errors in 'msg' or 'error'
+            alert(data.msg || data.error || "Registration failed");
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
+}
+//2.login
+async function loginUser() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        const response = await fetch('http://localhost:3000/api/v1/users/login', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem('token', data.token); 
+            window.location.href = "dashboard.html";
+        } else {
+            alert(data.msg || "Invalid credentials");
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+    }
 }
 
-
 function openLogin() {
-  document.getElementById("login-modal").classList.remove("hidden");
+    document.getElementById("login-modal").classList.remove("hidden");
 }
 
 function closeLogin() {
-  document.getElementById("login-modal").classList.add("hidden");
+    document.getElementById("login-modal").classList.add("hidden");
 }
-
-function login() {
-  // later: real auth
-  window.location.href = "dashboard.html";
-}
-
-
-
 
 const nav = document.querySelector('nav');
 const slide3 = document.querySelector('.slide3');

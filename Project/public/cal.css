@@ -27,7 +27,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
-  padding: 120px 40px 40px 40px; /* Top padding for your fixed nav */
+  padding: 80px 40px 40px 40px; /* Top padding for your fixed nav */
   justify-content: center;
   min-height: 100vh;
 }
@@ -200,4 +200,34 @@ audio {
 
 .calendar-section p:hover {
     color: var(--sage-dark);
+}
+
+.recording-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.delete-btn {
+    align-self: flex-end; /* Puts it in the bottom right */
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+.delete-btn:hover {
+    background-color: #cc0000;
 }

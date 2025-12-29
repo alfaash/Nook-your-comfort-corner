@@ -6,31 +6,63 @@ const selectedDateText = document.getElementById("selectedDateText");
 let currentDate = new Date();
 let allFetchedJournals = []; 
 
-// --- 1. RUN IMMEDIATELY ON LOAD ---
 window.onload = async () => {
     renderCalendar();
     await fetchJournalsFromBackend(); 
 };
 
-// --- 2. FETCH FROM BACKEND ---
 async function fetchJournalsFromBackend() {
     const token = localStorage.getItem('token');
+    if (!token) {
+        window.location.href = "index.html"; // Redirect to login if no token
+        return;
+    }
+
     try {
-        const response = await fetch('/api/v1/journal', {
+        const response = await fetch('http://localhost:3000/api/v1/journal', {
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
         const data = await response.json();
         
+        // Your controller returns { journals: [...] }
         allFetchedJournals = data.journals || [];
         displayRecordings(allFetchedJournals);
     } catch (err) {
         console.error("Fetch Error:", err);
-        recordingsList.innerHTML = `<p class="empty-msg">Error connecting to your archives. </p>`;
+        recordingsList.innerHTML = `<p class="empty-msg">Error connecting to your archives.</p>`;
     }
 }
 
-// --- 3. DISPLAY LOGIC ---
+// --- 6. DELETE LOGIC ---
+window.deleteJournal = async (journalId) => {
+    if (!confirm("Permanently delete this archive from Cloudinary and Nook?")) return;
+    
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:3000/api/v1/journal/${journalId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message); // "Journal Deleted Successfully!"
+            allFetchedJournals = allFetchedJournals.filter(j => j._id !== journalId);
+            loadAllRecordings();
+        } else {
+            alert(result.message || "Could not delete.");
+        }
+    } catch (err) {
+        console.error("Delete Error:", err);
+        alert("Delete failed. Server unreachable.");
+    }
+};
+// ---  DISPLAY LOGIC ---
 function displayRecordings(list, filterTitle = "All My Rants") {
     selectedDateText.innerText = filterTitle;
     recordingsList.innerHTML = "";
@@ -43,17 +75,18 @@ function displayRecordings(list, filterTitle = "All My Rants") {
     list.forEach(journal => createCard(journal));
 }
 
-// --- 4. REUSABLE CARD UI (Now with AI Response & Sentiment) ---
 function createCard(journal) {
     const dateObj = new Date(journal.timestamp);
     const dateStr = dateObj.toLocaleDateString();
     const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    // Determine sentiment emoji
+    // Sentiment logic
     const emoji = journal.sentimentScore > 0 ? '😊' : journal.sentimentScore < 0 ? '😔' : '😐';
 
     const card = document.createElement("div");
     card.className = "recording-card";
+
+    // Building the internal 
     card.innerHTML = `
         <div class="rec-info">
             <span><strong>${dateStr} | ${timeStr}</strong></span>
@@ -67,12 +100,14 @@ function createCard(journal) {
             <p class="ai-note"><strong>AI Response:</strong> ${journal.aiResponse || "Processing..."}</p>
         </div>
 
-        <button class="delete-btn" onclick="deleteJournal('${journal._id}')">Delete Archive</button>
+        <button class="delete-btn" onclick="deleteJournal('${journal._id}')">
+            Delete Recording
+        </button>
     `;
+    
     recordingsList.appendChild(card);
 }
-
-// --- 5. CALENDAR FILTERING ---
+// ---  CALENDAR FILTERING ---
 function loadRecordingsForDate(selectedDateStr) {
     const filtered = allFetchedJournals.filter(j => {
         const jDate = new Date(j.timestamp).toISOString().split('T')[0];
@@ -86,19 +121,18 @@ function loadAllRecordings() {
     displayRecordings(allFetchedJournals, "All My Rants");
 }
 
-// --- 6. DELETE LOGIC (Hits Backend) ---
+// ---  DELETE LOGIC (Hits Backend) ---
 window.deleteJournal = async (journalId) => {
     if (!confirm("Permanently delete this archive from Cloudinary and Nook?")) return;
     
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`/api/v1/journals/${journalId}`, {
+        const response = await fetch(`http://localhost:3000/api/v1/journal/${journalId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (response.ok) {
-            // Remove from local array and refresh
             allFetchedJournals = allFetchedJournals.filter(j => j._id !== journalId);
             loadAllRecordings();
         }
@@ -107,7 +141,7 @@ window.deleteJournal = async (journalId) => {
     }
 };
 
-// --- 7. CALENDAR UI RENDER ---
+// ---  CALENDAR UI RENDER ---
 function renderCalendar() {
     calendar.innerHTML = "";
     const year = currentDate.getFullYear();
@@ -130,7 +164,6 @@ function renderCalendar() {
         dateBox.className = "calendar-day";
         dateBox.innerText = day;
         
-        // Formatting to match ISO string comparison
         const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
         dateBox.onclick = () => {
