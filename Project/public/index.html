@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nook-Your Comfort Corner</title>
+
+  <link rel="stylesheet" href="1.css">
+</head>
+
+<body>
+
+  <!-- SPLASH / FLASH SCREEN -->
+   
+<!-- SPLASH / LOADING SCREEN -->
+<div id="splash-screen">
+
+  <div class="blob-outer-container">
+    <div class="blob-inner-container">
+      <div class="blob"></div>
+    </div>
+  </div>
+
+  <div class="splash-content">
+    <div class="webname">Nook</div>
+    <p>Your Comfort Corner</p>
+  </div>
+
+</div>
+
+
+  <!-- MAIN APP -->
+  <div id="mainpage" class="hidden">
+
+    <!-- NAVBAR -->
+    <nav>
+      <h1>Nook</h1>
+      <div class="nav-links">
+        <a onclick="goToSlide(2)">Login</a>
+        <a onclick="openLogin()">Resgister</a>
+      </div>
+    </nav>
+
+    <!-- VERTICAL SLIDER -->
+    <div class="slider" id="slider">
+<!-- SLIDE 1 -->
+<section class="slide slide1">
+  <div class="slide1-wrapper">
+
+    <!-- LEFT IMAGE -->
+    <div class="slide1-image">
+      <img src="1.png" alt="Person feeling calm and supported">
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="slide1-content">
+<h2>
+  You Are Not Alone
+</h2>
+
+      <p class="sub-heading">
+        Nook is your quiet corner to pause, breathe, and feel supported.
+      </p>
+
+      <p class="support-text">
+        A safe space for your thoughts — anytime, anywhere.
+      </p>
+
+    
+    </div>
+
+  </div>
+</section>
+
+      <!-- LOGIN MODAL -->
+      <div id="login-modal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeLogin()"></div>
+
+        <div class="modal-box">
+          <h3>Resgister to Nook</h3>
+          <input type="email" placeholder="Email" />
+          <input type="password" placeholder="Password" />
+          <button onclick="login()">Enter Your Nook</button>
+          <p class="close-text" onclick="closeLogin()">Maybe later</p>
+        </div>
+      </div>
+
+      
+<!-- SLIDE 2 -->
+<section class="slide slide2">
+  <div class="slide2-wrapper">
+
+    <!-- LEFT CONTENT -->
+    <div class="slide2-content">
+      <h2>Your Mind Matters</h2>
+
+      <p class="sub-heading">
+        Track emotions, reflect gently, and heal at your pace.
+      </p>
+
+      <p class="support-text">
+        Understand patterns, not pressure.
+      </p>
+
+    
+    </div>
+
+    <!-- RIGHT IMAGE -->
+    <div class="slide2-image">
+      <div class="circle-image">
+        <img src="2.png" alt="Mental health reflection illustration">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+      <!-- SLIDE 3 -->
+      <section class="slide slide3">
+        <div class="slide3-wrapper">
+          <div class="login-box">
+            <h3>Sign In to Nook</h3>
+            <input type="email" placeholder="Email" />
+            <input type="password" placeholder="Password" />
+            <button onclick="login()">Enter Your Nook</button>
+          </div>
+        </div>
+      </section>
+
+  <script src="1.js"></script>
+</body>
+</html>
