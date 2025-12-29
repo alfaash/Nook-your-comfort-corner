@@ -1,0 +1,665 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:'cursive';
+}
+
+body {
+  overflow: hidden;
+}
+
+
+.home-page {
+    background-color: #6B9080;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.content .quote {
+    color: white;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 64px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+
+
+.blob-outer-container {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    inset: 0;
+    margin: auto;
+    filter: blur(75px);
+    /*opacity: 0.5;*/
+}
+
+.blob-inner-container {
+    border-radius: 99999px;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 100vw;
+    height: 100vh;
+    min-width: 1000px;
+    overflow: hidden;
+    background-color: #fff;
+    transform: scale(0.8);
+}
+
+.blob {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    inset: 0;
+    margin: auto;
+    background: conic-gradient(from 0deg, #97bfd7, #cbf7ee, #e2e6e5, #d9ecec, #c5deca, #bdd9b5);
+    animation: spinBlob 8s linear infinite;
+}
+
+@keyframes spinBlob {
+    0% {
+        transform: rotate(0deg) scale(2);
+    }
+
+    100% {
+        transform: rotate(1turn) scale(2);
+    }
+}
+/* ---------- SPLASH ---------- */
+/* SPLASH SCREEN */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  background: #A4C3B2; /* calm dark tone */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  overflow: hidden;
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Content above blob */
+.splash-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.webname {
+  font-size: clamp(3.5rem, 7vw, 6rem);
+  letter-spacing: 5px;
+  font-weight: 600;
+  animation: glow 3.5s;
+  font-family:cursive;
+
+}
+
+.splash-content p {
+  letter-spacing: 2px;
+  color: #010e0a;
+  font-size: clamp(1.5rem, 2vw, 1rem);
+  opacity: 0.7;
+  letter-spacing: 0.5px;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+}
+
+/* VANISH ANIMATION */
+#splash-screen.hide {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+/* Hide helper */
+.hidden {
+  display: none;
+}
+
+#logopage {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: transform 0.8s ease, opacity 0.6s ease;
+}
+
+#logopage.slide-out {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+@keyframes glow {
+  0% { color: #0a1e0e; }
+  25% { color: #4a8a6f; }
+  50% { color: #eaf0eb; }
+   100% { color: #2d5834; }
+
+}
+
+/* ---------- MAIN PAGE ---------- */
+.hidden {
+  display: none;
+}
+
+/* NAVBAR */
+
+/* SLIDE 3 NAV STYLE */
+nav.nav-slide-3 {
+  background-color: transparent; /* Hide the solid color */
+  background-image: url('3.png');  
+  /* Optional: add a dark overlay if your image is too light for the text */
+  background-blend-mode: overlay;
+}
+
+
+
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 67px;
+  backdrop-filter: blur(10px);
+  background-color: #6B9080;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  z-index: 10;
+}
+
+nav h1 {
+  color: #516e61;
+  height: 40px;
+  font-family:cursive;
+
+}
+
+
+.nav-links a {
+  margin-left: 20px;
+  cursor: pointer;
+  color: whitesmoke;
+  background-color: #3e534a;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+/* ---------- VERTICAL SLIDER ---------- */
+.slider {
+  position: relative;
+  height: 300vh;
+  transition: transform 0.8s ease-in-out;
+  
+}
+
+.slide {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 60px;
+}
+
+.slide1 {
+  background: linear-gradient(#fff, #fcfefd);
+}
+.slide2 {
+  background: linear-gradient(#ffff, #fff);
+}
+.slide3 {
+  background-image: url("3.png");
+  position: relative;
+
+}
+
+
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .slide3-wrapper {
+    justify-content: center;   /* CENTER on mobile */
+    padding-right: 0;
+  }
+
+  
+}
+
+.content {
+  text-align: center;
+  max-width: 600px;
+}
+
+.content h2 {
+  color: #0a1e0e;
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+/*button*/
+/* Slide 1 layout */
+.slide1-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 20px;
+}
+
+/* Button stays aligned nicely */
+.explore-btn {
+  padding: 12px 30px;
+  border-radius: 20px;
+  border: none;
+  background: #83b0e1;
+  color: #101935;
+  font-size: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .slide1-wrapper {
+    flex-direction: column;     /* stack vertically */
+    text-align: center;
+  }
+
+  .explore-btn {
+    margin-top: 20px;           /* button below text */
+  }
+}
+
+
+
+/* MODAL */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+}
+
+.modal-box {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 360px;
+  margin: auto;
+  margin-top: 15vh;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-box input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.modal-box button {
+  width: 100%;
+  padding: 10px;
+  background: #5a7a6c;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.close-text {
+  margin-top: 12px;
+  font-size: 14px;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* reuse */
+.hidden {
+  display: none;
+}
+/* SLIDE 1 BASE */
+.slide1 {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.slide1-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+/* IMAGE */
+.slide1-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 400px;           /* adjust size */
+  height: 500px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.slide1-image img {
+ 
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+}
+
+/* CONTENT */
+.slide1-content {
+  flex: 1;
+}
+
+.slide1-content h2 {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: #2e6339;
+}
+
+.sub-heading {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  color: #2e6339;
+}
+
+.support-text {
+  font-size: 0.95rem;
+  color: #51845b;
+  margin-bottom: 28px;
+}
+
+
+
+/* 📱 MOBILE RESPONSIVE */
+@media (max-width: 900px) {
+  .slide1-wrapper {
+    flex-direction: column;
+    text-align: center;
+    
+  }
+
+  .slide1-content h2 {
+    font-size: 2.4rem;
+  }
+
+  
+}
+
+/* SLIDE 2 */
+.slide2 {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.slide2-wrapper {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+
+/* IMAGE */
+.slide2-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  width: 600px;           /* adjust size */
+  height: 465px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+}
+
+.slide2-image img {
+ 
+  width: 100%;
+  height: 100%;
+  object-fit:contain; 
+}
+
+/* CONTENT */
+.slide2-content {
+  flex: 1;
+}
+
+.slide2-content h2 {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  color: #2e6339;
+}
+
+
+
+/* SLIDE 3 CONTAINER */
+
+
+/* WRAPPER FOR CENTERING */
+.slide3-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* THE LOGIN BOX CARD */
+.login-box {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 380px; /* Limits width on desktop */
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+/* TITLE STYLE */
+.login-box h3 {
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  color: #1e382d;
+  font-family: sans-serif;
+  letter-spacing: -0.5px;
+}
+
+/* INPUT FIELD STYLING */
+.login-box input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 15px;
+  border: 2px solid #eef2f1;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #fafbfc;
+  color: #333;
+  outline: none;
+  transition: all 0.3s ease;
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+}
+
+/* INPUT HOVER & FOCUS */
+.login-box input:focus {
+  border-color: #6b9080;
+  background-color: #fff;
+  box-shadow: 0 0 0 4px rgba(107, 144, 128, 0.1);
+}
+
+/* BUTTON STYLING */
+.login-box button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 10px;
+  background-color: #6b9080;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* BUTTON HOVER */
+.login-box button:hover {
+  background-color: #5a7a6c;
+  transform: translateY(-1px);
+}
+
+/* BUTTON CLICK EFFECT */
+.login-box button:active {
+  transform: translateY(1px);
+}
+
+/* RESPONSIVE DESIGN FOR MOBILE */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px 20px;
+    border-radius: 15px;
+  }
+
+  .login-box h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+  
+  .login-box input {
+    padding: 12px;
+    font-size: 16px; /* Prevents auto-zoom on iPhone */
+  }
+}
+
+/* ---------- UPDATED CONTENT WRAPPERS ---------- */
+.slide1-wrapper, .slide2-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    max-width: 1100px;
+    padding: 20px; /* Added padding to prevent text touching screen edges */
+}
+
+
+/* ---------- IMPROVED RESPONSIVE QUERIES ---------- */
+
+/* Tablets (900px and below) */
+@media (max-width: 900px) {
+    .slide1-wrapper, .slide2-wrapper {
+        flex-direction: column; /* Stacks image and text vertically */
+        text-align: center;
+        gap: 20px;
+    }
+
+    .slide1-image, .slide2-image {
+        order: -1; /* Keeps image on top */
+        width: 100%;
+    }
+
+    .slide1-image img, .slide2-image img {
+        max-width: 60%; /* Prevents image from being too huge on tablets */
+    }
+
+    .slide {
+        padding-top: 100px; /* Ensures content starts below the fixed nav */
+    }
+}
+
+/* Mobile Devices (600px and below) */
+@media (max-width: 600px) {
+    nav {
+        padding: 0 10px;
+    }
+
+    nav h1 {
+        font-size: 1.2rem;
+    }
+
+    .nav-links a {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+
+    .slide1-image img, .slide2-image img {
+        max-width: 80%; /* Image takes more width on small phones */
+    }
+
+    /* Force the H2 to scale down even if inline styles exist */
+    .slide1-content h2, .slide2-content h2 {
+        font-size: 2rem !important; 
+        line-height: 1.2;
+    }
+
+    .sub-heading {
+        font-size: 1rem;
+    }
+}
+
+/* Small Screens / iPhone SE (380px and below) */
+@media (max-width: 380px) {
+    .webname {
+        font-size: 2.5rem;
+    }
+
+    .login-box {
+        padding: 20px;
+        width: 95%; /* Prevents the box from hitting screen edges */
+    }
+
+    .nav-links {
+        gap: 5px;
+    }
+}

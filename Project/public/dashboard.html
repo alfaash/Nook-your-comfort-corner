@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sensor Permission</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <link rel="stylesheet" href="main.css">
+
+
+</head>
+<body>
+
+  <div id="sensor-modal" class="modal hidden">
+    <div class="modal-box">
+      <h2>Enable Motion Sensors</h2>
+      <p>
+        We use motion and orientation sensors to improve your experience.
+      </p>
+
+      <div class="modal-actions">
+        <button class="allow" onclick="requestSensorPermission()">
+          Allow
+        </button>
+        <button class="deny" onclick="closeSensorModal()">
+          Not Now
+        </button>
+      </div>
+    </div>
+  </div>
+  
+<!--contact-->
+  <div id="contact-modal" class="modal hidden">
+  <div class="modal-box">
+    <h2>Emergency Contact</h2>
+    <p>Please manually enter a contact for emergencies.</p>
+    
+    <div class="input-group">
+      <input type="text" id="contact-name" placeholder="Contact Name" required>
+      <input type="tel" id="contact-phone" placeholder="Phone Number" required>
+    </div>
+
+    <div class="modal-actions">
+      <button class="allow" onclick="saveManualContact()">Save & Continue</button>
+    </div>
+  </div>
+</div>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    <!-- CALENDAR BUTTON -->
+    <div class="calendar-btn">
+      <a href="calenderrec.html">All Recording</a>
+    </div>
+
+    <!-- RECORDING CONTAINER -->
+    <div class="container">
+      <section class="record-section">
+
+        <!-- AUDIO VISUALIZER -->
+        <canvas id="visualizer"></canvas>
+
+        <!-- START / TIMER / STOP -->
+        <div class="overlap-container" id="overlapContainer">
+          <div class="view timer" id="timer">60</div>
+          <button class="view" id="rantBtn">Start</button>
+          <button id="stopBtn" class="stop-rect">STOP</button>
+        </div>
+
+        <!-- STATUS TEXT -->
+        <p id="status">You have 60 seconds. Say everything.</p>
+
+        <!-- SENSOR DATA -->
+        <!--<div class="sensor-container">
+          <h3>Live Sensor Averages (Every 10s)</h3>
+          <ul id="averages-list"></ul>
+        </div>-->
+
+      </section>
+
+    </div>
+  </main>
+
+
+  <script src="main.js"></script>
+  <script src="caljo.js"></script>
+
+</body>
+</html>
