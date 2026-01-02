@@ -1,6 +1,8 @@
 // Requiring Modules
 const {StatusCodes} = require("http-status-codes");
 const alertSchema = require("../models/alert");
+const User = require("../models/user");
+const twilio = require("twilio");
 const {NotFoundError, BadRequestError, UnauthenticatedError} = require("../errors");
 
 // ----------------------------------------------------------------------------- GET ALERT ROUTE ------------------------------------------------------------
@@ -42,6 +44,26 @@ const postAlert = async (req,res)=>{
     });
 
 }
+// ----------------------------------------------------------------------------- SEND ALERT MESSAGE ROUTE ------------------------------------------------------------
+const sendAlertMessage = async (req,res)=>{
+    //getting user id
+    const userId = req.user.userId;  
+    console.log("📲 Sending Emergency SMS...");
+    
+    const client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+    const user = await User.findById(userId);
 
+    if (user && user.emergencyContacts && user.emergencyContacts.length > 0) {
+        const alertPromises = user.emergencyContacts.map(contact => 
+            client.messages.create({
+                body: `🚨 NOOK ALERT: Attention ${contact.contactName}, A sudden impact detected for ${user.name}. Please check in!🚨`,
+                from: process.env.TWILIO_PHONE_NUMBER,
+                to: contact.phoneNumber
+            })
+        );
+        await Promise.all(alertPromises);
+    }
+    res.status(StatusCodes.OK).json({message : "Message sent to emergency contacts"});
+}
 // Exporting modules
-module.exports = {getAlert, postAlert};
+module.exports = {getAlert, postAlert, sendAlertMessage};

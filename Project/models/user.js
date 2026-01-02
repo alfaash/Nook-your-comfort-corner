@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
                 type: String,
                 required: [true, "Contact number is required"],
                 minlength:10,
-                maxlength:10
+                maxlength:15
             }
         }
     ],

@@ -1,6 +1,7 @@
 // Requiring Modules
 const { StatusCodes } = require("http-status-codes");
 const sensorDataSchema = require("../models/sensorData");
+const User = require("../models/user");
 const {BadRequestEroor, NotFoundError, UnauthenticatedError} = require("../errors");
 
 // ------------------------------------------------------------------- GET SENSOR DATA CONTROLLER ----------------------------------------------
@@ -18,27 +19,73 @@ const getSensorData = async (req,res)=>{
 }
 
 // ------------------------------------------------------------------- STORE SENSOR DATA CONTROLLER ----------------------------------------------
-const storeSensorData = async (req,res)=>{
-    // getting user id
+const storeSensorData = async (req, res) => {
     const userId = req.user.userId;
-    // Getting the data from the body
-    const {sensorData} = req.body;
-    // Validating the sensor data
-    if(!sensorData || !sensorData.accelerometer.x || !sensorData.accelerometer.y || !sensorData.accelerometer.z || !sensorData.gyroscope.alpha || !sensorData.gyroscope.beta || !sensorData.gyroscope.gamma){
-        return res.status(StatusCodes.BAD_REQUEST).send("Please Provide complete sensor data!");
+    const { sensorData } = req.body;
+
+    // 1. Validate Input
+    if (!sensorData || !sensorData.accelerometer || !sensorData.accelerometer.x) {
+        return res.status(StatusCodes.BAD_REQUEST).send("Please provide complete sensor data!");
     }
-    // If validated, storing data in database
-    const response = await sensorDataSchema.create({
-        userId : userId,
-        sensorData: sensorData
-    });
-    // Sending success response
-    res.status(StatusCodes.CREATED).json({
-        success : true,
-        message : "Data saved successfully",
-        dataId : response._id
-    });
-}
+
+    try {
+        // 2. Calculate Current Magnitude (Total Force)
+        const { x, y, z } = sensorData.accelerometer;
+        const currentMagnitude = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+
+        // 3. Store Data (Background)
+        const savedDoc = await sensorDataSchema.create({
+            userId: userId,
+            sensorData: sensorData,
+            timestamp: new Date() 
+        });
+
+        // 4. Fetch History (For context)
+        const history = await sensorDataSchema.find({ userId })
+            .sort({ timestamp: -1 }) 
+            .limit(30); 
+
+        // 5. THE LOCAL DETECTION LOGIC 🧠
+        let isAnomaly = false;
+
+        // Logic: A fall is a massive spike in G-force.
+        // Normal gravity is ~9.8. Walking is ~12-15. A hard fall is > 30.
+        const HARD_IMPACT_THRESHOLD = 30.0; 
+
+        if (currentMagnitude > HARD_IMPACT_THRESHOLD) {
+            isAnomaly = true;
+            console.log(`🚨 HARD FALL DETECTED! Magnitude: ${currentMagnitude.toFixed(2)} m/s²`);
+        } 
+        // Secondary Check: Spike relative to recent history
+        else if (history.length >= 10) {
+            const sum = history.reduce((acc, item) => {
+                const hx = item.sensorData.accelerometer.x;
+                const hy = item.sensorData.accelerometer.y;
+                const hz = item.sensorData.accelerometer.z;
+                return acc + Math.sqrt(hx**2 + hy**2 + hz**2);
+            }, 0);
+            const average = sum / history.length;
+            
+            // If current force is 3x the average of last few seconds -> Anomaly
+            if (currentMagnitude > (average * 3)) {
+                isAnomaly = true;
+                console.log(`⚠️ SUDDEN SPIKE DETECTED! Value: ${currentMagnitude.toFixed(2)} (Avg: ${average.toFixed(2)})`);
+            }
+        }
+
+        res.status(StatusCodes.CREATED).json({ 
+            success: true, 
+            isAnomaly: isAnomaly,
+            currentMagnitude: currentMagnitude 
+        });
+    } catch (error) {
+        console.error("Sensor Controller Error:", error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+            message: "An error occurred", 
+            error: error.message 
+        });
+    }
+};
 
 // Exporting controllers
 module.exports = {getSensorData, storeSensorData};
