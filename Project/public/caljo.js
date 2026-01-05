@@ -21,7 +21,6 @@ async function setupAudio() {
     try {
         stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         
-        // FORCE 16000Hz for Azure AI compatibility
         audioCtx = new (window.AudioContext || window.webkitAudioContext)({
             sampleRate: 16000, 
         });
@@ -49,6 +48,7 @@ async function setupAudio() {
         alert("Microphone access is required.");
     }
 }
+
 function startRecordingLogic() {
     isRecording = true;
     leftChannel = [];
@@ -72,38 +72,61 @@ function startRecordingLogic() {
     drawVisualizer();
 }
 
+/* ---------- 3. AUDIO SETUP & RECORDING ---------- */
+
+function toggleLoader(show) {
+    const loaderId = "ai-loader";
+    let loader = document.getElementById(loaderId);
+
+    if (show) {
+        if (!loader) {
+            loader = document.createElement("div");
+            loader.id = loaderId;
+            loader.innerHTML = `
+                <div class="audio-wave">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <p class="loading-msg">Listening to your heart...</p>
+            `;
+            rantBtn.parentNode.insertBefore(loader, rantBtn);
+        }
+        loader.style.display = "flex";
+    } else if (loader) {
+        loader.style.display = "none";
+    }
+}
 function stopRecording() {
     if (!isRecording) return;
     isRecording = false;
     clearInterval(countdown);
     
-    // UI Reset
+    //Vanish the button and SHOW the loader
+    rantBtn.style.display = "none"; 
+    toggleLoader(true); 
+    
     container.classList.remove("active");
-    rantBtn.disabled = false;
-    statusText.innerText = "Processing your rant with AI";
-
-    // WAV Processing
+    statusText.innerText = ""; 
     const flatBuffer = flattenArray(leftChannel);
     const wavBlob = exportWAV(flatBuffer, audioCtx.sampleRate);
     
-    // Stop Mic Stream
     if (stream) stream.getTracks().forEach(track => track.stop());
     
-    // Send to Backend
     uploadToBackend(wavBlob);
 }
 
-/* ---------- 4. BACKEND SYNC (The Part You Needed) ---------- */
+/* ---------- 4. BACKEND SYNC ---------- */
 
 async function uploadToBackend(blob) {
-    // 1. Calculate how long the user actually spoke
     const finalDuration = 60 - timeLeft;
-
-    // 2. Convert Blob to Base64
     const reader = new FileReader();
     reader.readAsDataURL(blob); 
+
     reader.onloadend = async () => {
-        const base64String = reader.result; // Format: data:audio/wav;base64,...
+        const base64String = reader.result;
         const token = localStorage.getItem('token'); 
 
         try {
@@ -121,19 +144,31 @@ async function uploadToBackend(blob) {
 
             const result = await response.json();
 
+            toggleLoader(false); 
+
             if (response.ok) {
-                statusText.innerText = "Success: Rant analyzed and saved!";
-                console.log("Journal Saved:", result.journal);
+                const displayMsg = result.aiResponse || (result.journal && result.journal.aiResponse) || "I'm listening...";
+                
+                statusText.innerHTML = `
+                    <div class="ai-response-container">
+                        <span class="ai-label">AI INSIGHT</span>
+                        <h2 class="ai-main-text">${displayMsg}</h2>
+                    </div>
+                `;
             } else {
                 statusText.innerText = "Error: " + (result.message || "Failed to save");
             }
         } catch (e) {
+            toggleLoader(false); 
             statusText.innerText = "Status: Connection Error.";
             console.error(e);
+        } finally {
+            // Button reappears
+            rantBtn.style.display = "block";
+            rantBtn.disabled = false;
         }
     };
 }
-
 /* ---------- 5. VISUALIZER & HELPERS ---------- */
 
 function drawVisualizer() {

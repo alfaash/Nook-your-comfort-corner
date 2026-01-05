@@ -53,6 +53,50 @@ window.addEventListener("wheel", (event) => {
 function goToSlide(index) {
   slider.style.transform = `translateY(-${index * 100}vh)`;
 }
+/* TOUCH CONTROL FOR MOBILE */
+let touchStartY = 0;
+let touchEndY = 0;
+
+window.addEventListener("touchstart", (event) => {
+  touchStartY = event.changedTouches[0].screenY;
+}, { passive: true });
+
+window.addEventListener("touchend", (event) => {
+  touchEndY = event.changedTouches[0].screenY;
+  handleGesture();
+}, { passive: true });
+
+function handleGesture() {
+  if (isScrolling) return;
+
+  // Calculate the distance swiped
+  const swipeDistance = touchStartY - touchEndY;
+  const threshold = 50; // Minimum pixels to count as a swipe
+
+  if (swipeDistance > threshold) {
+    // Swiped up -> Show next slide
+    if (currentSlide < totalSlides - 1) {
+      currentSlide++;
+      goToSlide(currentSlide);
+      lockScroll();
+    }
+  } else if (swipeDistance < -threshold) {
+    // Swiped down -> Show previous slide
+    if (currentSlide > 0) {
+      currentSlide--;
+      goToSlide(currentSlide);
+      lockScroll();
+    }
+  }
+}
+
+// Helper to handle the timeout logic in one place
+function lockScroll() {
+  isScrolling = true;
+  setTimeout(() => {
+    isScrolling = false;
+  }, 900);
+}
 
 /* AUTH LOGIC */
 

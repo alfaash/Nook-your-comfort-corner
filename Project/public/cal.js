@@ -110,8 +110,16 @@ function createCard(journal) {
 // ---  CALENDAR FILTERING ---
 function loadRecordingsForDate(selectedDateStr) {
     const filtered = allFetchedJournals.filter(j => {
-        const jDate = new Date(j.timestamp).toISOString().split('T')[0];
-        return jDate === selectedDateStr;
+        const dateObj = new Date(j.timestamp);
+        
+        // Extract local Year, Month, and Day
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const d = String(dateObj.getDate()).padStart(2, "0");
+        
+        const localDateStr = `${y}-${m}-${d}`;
+        
+        return localDateStr === selectedDateStr;
     });
 
     displayRecordings(filtered, `Rants from ${selectedDateStr}`);
@@ -123,7 +131,7 @@ function loadAllRecordings() {
 
 // ---  DELETE LOGIC (Hits Backend) ---
 window.deleteJournal = async (journalId) => {
-    if (!confirm("Permanently delete this archive from Cloudinary and Nook?")) return;
+    if (!confirm("Permanently delete this archive from Nook?")) return;
     
     const token = localStorage.getItem('token');
     try {

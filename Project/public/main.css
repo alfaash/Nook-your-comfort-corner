@@ -135,7 +135,7 @@ body {
 }
 
 #status {
-  margin-top: 60px; 
+  margin-top: 30px; 
   font-weight: 500;
   color: #444;
 }
@@ -295,4 +295,180 @@ body {
   width: 90%;
   max-width: 400px;
   text-align: center;
+}
+
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px); /* Blurs the calendar behind it */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.overlay-content {
+    background: rgba(25, 25, 25, 0.95);
+    padding: 40px;
+    border-radius: 28px;
+    text-align: center;
+    width: 90%;
+    max-width: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.alert-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    display: inline-block;
+    animation: shake 0.5s infinite;
+}
+
+.overlay-content h1 {
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 24px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.overlay-content p {
+    color: #a0a0a0;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+#countdown-number {
+    font-size: 80px;
+    font-weight: 800;
+    color: #ff4b2b;
+    text-shadow: 0 0 20px rgba(255, 75, 43, 0.5);
+    margin: 10px 0;
+    font-family: 'Monaco', monospace;
+}
+
+.progress-container {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    height: 8px;
+    border-radius: 10px;
+    margin-bottom: 35px;
+    overflow: hidden;
+}
+
+#progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    width: 100%;
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
+}
+
+#cancel-btn {
+    background: #00b894;
+    color: white;
+    border: none;
+    padding: 18px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2);
+}
+
+#cancel-btn:hover {
+    background: #55efc4;
+    transform: translateY(-2px);
+}
+
+#cancel-btn:active {
+    transform: translateY(0);
+}
+
+@keyframes slideIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.ai-main-text {
+    color: #ffffff;
+    margin-top: 10px;
+    transition: all 0.5s ease;
+    font-size: large;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(4px);
+    animation: slideInUp 0.6s ease-out;
+    max-width: 100%;
+}
+
+
+
+#ai-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 15px 0;
+}
+
+.audio-wave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: 30px; 
+}
+
+.audio-wave span {
+    width: 4px;
+    height: 12px;
+    background: #c8cfcc; 
+    border-radius: 10px;
+    animation: wave-animation 1s ease-in-out infinite;
+}
+
+.audio-wave span:nth-child(1) { animation-delay: 0.1s; }
+.audio-wave span:nth-child(2) { animation-delay: 0.2s; }
+.audio-wave span:nth-child(3) { animation-delay: 0.3s; }
+.audio-wave span:nth-child(4) { animation-delay: 0.4s; }
+.audio-wave span:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes wave-animation {
+    0%, 100% { height: 8px; transform: scaleY(1); }
+    50% { height: 25px; transform: scaleY(1.2); }
+}
+
+.loading-msg {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #c9e1d5;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
 }

@@ -142,3 +142,128 @@ async function saveManualContact() {
     alert("Server error. Please try again later.");
   }
 }
+
+
+
+
+//alert call
+const API_BASE_URL = "http://localhost:3000/api/v1";
+let countdownInterval = null;
+let currentAlertId = null; 
+let timeLeftt = 30;
+
+// MONITOR SENSORS
+window.addEventListener("devicemotion", (event) => {
+    const acc = event.accelerationIncludingGravity;
+    const gyro = event.rotationRate;
+
+    if (acc && acc.x !== null) {
+        // Logic to detect anomaly 
+        const totalForce = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+        
+        if (totalForce > 25 && !currentAlertId) { 
+            const sensorData = {
+                accelerometer: { x: acc.x, y: acc.y, z: acc.z },
+                gyroscope: { 
+                    alpha: gyro?.alpha || 0, 
+                    beta: gyro?.beta || 0, 
+                    gamma: gyro?.gamma || 0 
+                }
+            };
+            handleAnomalyDetected(sensorData);
+        }
+    }
+});
+
+//POST TO /alerts
+async function handleAnomalyDetected(sensorData) {
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/alerts`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ sensorData })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            currentAlertId = result.dataId; 
+            startUI();
+        }
+    } catch (err) {
+        console.error("Failed to start alert sequence", err);
+    }
+}
+
+// START 30 SEC TIMER
+function startUI() {
+    const overlay = document.getElementById('emergency-overlay');
+    const display = document.getElementById('countdown-number');
+    const progressBar = document.getElementById('progress-bar');
+    
+    overlay.classList.remove('hidden');
+    timeLeftt = 30;
+
+    countdownInterval = setInterval(() => {
+        timeLeftt--;
+        display.innerText = timeLeftt;
+        progressBar.style.width = `${(timeLeftt / 30) * 100}%`;
+
+        if (timeLeftt <= 0) {
+            clearInterval(countdownInterval);
+            triggerFinalEmergency();  
+
+        }
+    }, 1000);
+}
+
+// OPTION A - CANCEL
+async function cancelAlert() {
+    if (!currentAlertId) return;
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/alerts/${currentAlertId}/cancel`, {
+            method: "PATCH",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            stopEverything();
+            console.log("Alert Cancelled");
+        }
+    } catch (err) {
+        console.error("Cancel failed", err);
+    }
+}
+
+//OPTION B - SEND MESSAGE 
+async function triggerFinalEmergency() {
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/motionData/sendMessage`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+            alert("Emergency contacts notified!");
+            stopEverything();
+        }
+    } catch (err) {
+        console.error("Message send failed", err);
+    }
+}
+
+function stopEverything() {
+    clearInterval(countdownInterval);
+    document.getElementById('emergency-overlay').classList.add('hidden');
+    currentAlertId = null;
+}
+
