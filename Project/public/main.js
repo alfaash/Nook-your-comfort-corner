@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const modal = document.getElementById("sensor-modal");
-  if (modal) modal.classList.remove("hidden");
+  // Not asking for user's permission to start the capturing the device motion data
+  requestSensorPermission();
+  // const modal = document.getElementById("sensor-modal");
+  // if (modal) modal.classList.remove("hidden");
 });
 
 let motionBuffer = [];
@@ -20,8 +22,20 @@ async function requestSensorPermission() {
     startSensors();
     
     closeSensorModal();
-    const contactModal = document.getElementById("contact-modal");
-    if (contactModal) contactModal.classList.remove("hidden");
+    // Ask for user emergency contact only if there are no emergency contacts registered already
+    const token = localStorage.getItem('token'); 
+    const response = await fetch(`http://localhost:3000/api/v1/users`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          }
+    });
+    const userData = await response.json();
+    if(userData.user.emergencyContacts.length==0){
+      const contactModal = document.getElementById("contact-modal");
+      if (contactModal) contactModal.classList.remove("hidden");
+    }
 
   } catch (err) {
     console.error("Sensor Error:", err);

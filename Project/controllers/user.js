@@ -78,7 +78,7 @@ const userContact = async (req,res)=>{
 
 const getUserData = async (req,res)=>{
     // Getting user Id
-    const idToSearch = req.params.id;
+    const idToSearch = req.user.userId;
 
     // Searching user in database and fetching it's details except password
     const user = await User.findById(idToSearch).select("-password");
