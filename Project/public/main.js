@@ -109,7 +109,9 @@ async function processAndDisplayAverages() {
     const response  = await data.json();
     if(response.success){
       console.log("Data stored successfully");
+      console.log(response);
       if(response.isAnomaly){
+        console.log("anomaly detected!!")
         startUI();
         // let sensorData = {accelerometer: avgMotion, gyroscope: avgOrient};
         // handleAnomalyDetected(sensorData);
