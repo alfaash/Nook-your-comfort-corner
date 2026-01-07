@@ -91,6 +91,7 @@ async function processAndDisplayAverages() {
   motionBuffer = [];
   orientationBuffer = [];
 
+  const token = localStorage.getItem('token'); 
   try {
     const data = await fetch('https://nook-your-comfort-corner.onrender.com/api/v1/motionData', {
       method: 'POST', 
