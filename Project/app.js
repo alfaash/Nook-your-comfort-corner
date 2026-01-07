@@ -3,11 +3,21 @@ const express = require("express");
 require("dotenv").config();
 const connectDB = require("./db/connect"); // connectDB function to connect to Database
 const path = require('path'); 
+const cors = require("cors");
 
 // Creating app
 const app = express();
 
 // Middlewares
+
+app.use(cors({
+    origin: [
+        "http://localhost:3000",
+        "https://nook-your-comfort-corner.onrender.com",
+        "http://192.168.29.26:3000"
+    ],
+    credentials: true
+}));
 app.use(express.json({ limit : '50mb' })); //to parse body of incoming POST request with increased limit
 app.use(express.static(path.join(__dirname, 'public')));
 
