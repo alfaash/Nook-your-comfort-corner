@@ -50,7 +50,7 @@ const storeSensorData = async (req, res) => {
 
         // Logic: A fall is a massive spike in G-force.
         // Normal gravity is ~9.8. Walking is ~12-15. A hard fall is > 30.
-        const HARD_IMPACT_THRESHOLD = 30.0; 
+        const HARD_IMPACT_THRESHOLD = 10.0; 
 
         if (currentMagnitude > HARD_IMPACT_THRESHOLD) {
             isAnomaly = true;
