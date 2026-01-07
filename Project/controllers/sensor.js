@@ -24,7 +24,7 @@ const storeSensorData = async (req, res) => {
     const { sensorData } = req.body;
 
     // 1. Validate Input
-    if (!sensorData || !sensorData.accelerometer || !sensorData.accelerometer.x) {
+    if (!sensorData || !sensorData.accelerometer || sensorData.accelerometer.x === undefined || sensorData.accelerometer.y === undefined || sensorData.accelerometer.z === undefined) {
         return res.status(StatusCodes.BAD_REQUEST).send("Please provide complete sensor data!");
     }
 

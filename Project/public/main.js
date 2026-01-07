@@ -297,7 +297,7 @@ async function triggerFinalEmergency() {
     const token = localStorage.getItem("token");
 
     try {
-        const response = await fetch(`${API_BASE_URL}/motionData/sendMessage`, {
+        const response = await fetch(`${API_BASE_URL}/alerts/sendMessage`, {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}` }
         });
