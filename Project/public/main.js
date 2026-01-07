@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // if (modal) modal.classList.remove("hidden");
 });
 
+let currentSensorData;
 let motionBuffer = [];
 let orientationBuffer = [];
 
@@ -67,7 +68,7 @@ function startSensors() {
   setInterval(processAndDisplayAverages, 10000);
 }
 
-function processAndDisplayAverages() {
+async function processAndDisplayAverages() {
   if (motionBuffer.length === 0 && orientationBuffer.length === 0) {
     console.log("No sensor data captured yet...");
     return;
@@ -85,28 +86,57 @@ function processAndDisplayAverages() {
     gamma: orientationBuffer.length ? orientationBuffer.reduce((sum, d) => sum + d.gamma, 0) / orientationBuffer.length : 0
   };
 
+  currentSensorData = {accelerometer: avgMotion, gyroscope:avgOrient};
   //next interval
   motionBuffer = [];
   orientationBuffer = [];
 
-  updateUIList(avgMotion, avgOrient);
+  try {
+    const data = await fetch('http://localhost:3000/api/v1/motionData', {
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+      },
+      body: JSON.stringify({
+        sensorData: {
+          accelerometer: avgMotion,
+          gyroscope: avgOrient      
+        }
+      })
+    });
+    const response  = await data.json();
+    if(response.success){
+      console.log("Data stored successfully");
+      if(response.isAnomaly){
+        startUI();
+        // let sensorData = {accelerometer: avgMotion, gyroscope: avgOrient};
+        // handleAnomalyDetected(sensorData);
+      }
+    }
+    else{
+      console.log("Data not stored!");
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
-function updateUIList(motion, orient) {
-  const list = document.getElementById('averages-list');
-  if (!list) return;
+// function updateUIList(motion, orient) {
+//   const list = document.getElementById('averages-list');
+//   if (!list) return;
 
-  const li = document.createElement('li');
-  const timestamp = new Date().toLocaleTimeString();
+//   const li = document.createElement('li');
+//   const timestamp = new Date().toLocaleTimeString();
 
-  li.innerHTML = `
-    <strong>[${timestamp}]</strong><br>
-    Accel: ${motion.x.toFixed(1)}, ${motion.y.toFixed(1)}, ${motion.z.toFixed(1)}<br>
-    Gyro: ${orient.alpha.toFixed(0)}°, ${orient.beta.toFixed(0)}°, ${orient.gamma.toFixed(0)}°
-  `;
+//   li.innerHTML = `
+//     <strong>[${timestamp}]</strong><br>
+//     Accel: ${motion.x.toFixed(1)}, ${motion.y.toFixed(1)}, ${motion.z.toFixed(1)}<br>
+//     Gyro: ${orient.alpha.toFixed(0)}°, ${orient.beta.toFixed(0)}°, ${orient.gamma.toFixed(0)}°
+//   `;
   
-  list.insertBefore(li, list.firstChild);
-}
+//   list.insertBefore(li, list.firstChild);
+// }
 
 function closeSensorModal() {
   const modal = document.getElementById("sensor-modal");
@@ -167,52 +197,53 @@ let currentAlertId = null;
 let timeLeftt = 30;
 
 // MONITOR SENSORS
-window.addEventListener("devicemotion", (event) => {
-    const acc = event.accelerationIncludingGravity;
-    const gyro = event.rotationRate;
+// window.addEventListener("devicemotion", (event) => {
+//     const acc = event.accelerationIncludingGravity;
+//     const gyro = event.rotationRate;
 
-    if (acc && acc.x !== null) {
-        // Logic to detect anomaly 
-        const totalForce = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+//     if (acc && acc.x !== null) {
+//         // Logic to detect anomaly 
+//         const totalForce = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
         
-        if (totalForce > 25 && !currentAlertId) { 
-            const sensorData = {
-                accelerometer: { x: acc.x, y: acc.y, z: acc.z },
-                gyroscope: { 
-                    alpha: gyro?.alpha || 0, 
-                    beta: gyro?.beta || 0, 
-                    gamma: gyro?.gamma || 0 
-                }
-            };
-            handleAnomalyDetected(sensorData);
-        }
-    }
-});
+//         if (totalForce > 25 && !currentAlertId) { 
+//             const sensorData = {
+//                 accelerometer: { x: acc.x, y: acc.y, z: acc.z },
+//                 gyroscope: { 
+//                     alpha: gyro?.alpha || 0, 
+//                     beta: gyro?.beta || 0, 
+//                     gamma: gyro?.gamma || 0 
+//                 }
+//             };
+//             handleAnomalyDetected(sensorData);
+//         }
+//     }
+// });
+
 
 //POST TO /alerts
-async function handleAnomalyDetected(sensorData) {
-    const token = localStorage.getItem("token");
+// async function handleAnomalyDetected(sensorData) {
+//     const token = localStorage.getItem("token");
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/alerts`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ sensorData })
-        });
+//     try {
+//         const response = await fetch(`${API_BASE_URL}/alerts`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Authorization": `Bearer ${token}`
+//             },
+//             body: JSON.stringify({ sensorData })
+//         });
 
-        const result = await response.json();
+//         const result = await response.json();
 
-        if (response.ok) {
-            currentAlertId = result.dataId; 
-            startUI();
-        }
-    } catch (err) {
-        console.error("Failed to start alert sequence", err);
-    }
-}
+//         if (response.ok) {
+//             currentAlertId = result.dataId; 
+//             startUI();
+//         }
+//     } catch (err) {
+//         console.error("Failed to start alert sequence", err);
+//     }
+// }
 
 // START 30 SEC TIMER
 function startUI() {
@@ -238,22 +269,24 @@ function startUI() {
 
 // OPTION A - CANCEL
 async function cancelAlert() {
-    if (!currentAlertId) return;
-    const token = localStorage.getItem("token");
+  console.log("Alert cancelled!");
+  stopEverything();
+    // if (!currentAlertId) return;
+    // const token = localStorage.getItem("token");
 
-    try {
-        const response = await fetch(`${API_BASE_URL}/alerts/${currentAlertId}/cancel`, {
-            method: "PATCH",
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+    // try {
+    //     const response = await fetch(`${API_BASE_URL}/alerts/${currentAlertId}/cancel`, {
+    //         method: "PATCH",
+    //         headers: { "Authorization": `Bearer ${token}` }
+    //     });
 
-        if (response.ok) {
-            stopEverything();
-            console.log("Alert Cancelled");
-        }
-    } catch (err) {
-        console.error("Cancel failed", err);
-    }
+    //     if (response.ok) {
+    //         stopEverything();
+    //         console.log("Alert Cancelled");
+    //     }
+    // } catch (err) {
+    //     console.error("Cancel failed", err);
+    // }
 }
 
 //OPTION B - SEND MESSAGE 
@@ -273,6 +306,26 @@ async function triggerFinalEmergency() {
     } catch (err) {
         console.error("Message send failed", err);
     }
+    try {
+      const response = await fetch(`${API_BASE_URL}/alerts`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ currentSensorData })
+      });
+      const result = await response.json();
+      if(result.success){
+          console.log("Alert data stored");
+      }
+      else{
+        console.log("Alert data NOT STORED!");
+      }
+      
+  } catch (err) {
+      console.error("Failed to start alert sequence", err);
+  }
 }
 
 function stopEverything() {
