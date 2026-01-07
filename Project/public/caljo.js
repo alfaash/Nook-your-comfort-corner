@@ -130,7 +130,7 @@ async function uploadToBackend(blob) {
         const token = localStorage.getItem('token'); 
 
         try {
-            const response = await fetch('http://localhost:3000/api/v1/journal', {
+            const response = await fetch('https://nook-your-comfort-corner.onrender.com//api/v1/journal', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

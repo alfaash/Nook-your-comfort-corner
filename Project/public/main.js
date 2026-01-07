@@ -25,7 +25,7 @@ async function requestSensorPermission() {
     closeSensorModal();
     // Ask for user emergency contact only if there are no emergency contacts registered already
     const token = localStorage.getItem('token'); 
-    const response = await fetch(`http://localhost:3000/api/v1/users`, {
+    const response = await fetch(`https://nook-your-comfort-corner.onrender.com//api/v1/users`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ async function processAndDisplayAverages() {
   orientationBuffer = [];
 
   try {
-    const data = await fetch('http://localhost:3000/api/v1/motionData', {
+    const data = await fetch('https://nook-your-comfort-corner.onrender.com//api/v1/motionData', {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ async function saveManualContact() {
   }
 
   try {
-    const response = await fetch('http://localhost:3000/api/v1/users/contacts', {
+    const response = await fetch('https://nook-your-comfort-corner.onrender.com//api/v1/users/contacts', {
       method: 'POST', 
       headers: {
         'Content-Type': 'application/json',
@@ -191,7 +191,7 @@ async function saveManualContact() {
 
 
 //alert call
-const API_BASE_URL = "http://localhost:3000/api/v1";
+const API_BASE_URL = "https://nook-your-comfort-corner.onrender.com//api/v1";
 let countdownInterval = null;
 let currentAlertId = null; 
 let timeLeftt = 30;
