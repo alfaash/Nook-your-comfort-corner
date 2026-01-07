@@ -316,7 +316,7 @@ async function triggerFinalEmergency() {
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify({ currentSensorData })
+          body: JSON.stringify({ sensorData: currentSensorData })
       });
       const result = await response.json();
       if(result.success){
