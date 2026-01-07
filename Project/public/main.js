@@ -150,7 +150,10 @@ function closeSensorModal() {
 //for emergency contact
 async function saveManualContact() {
   const contactName = document.getElementById("contact-name").value;
-  const phoneNumber = document.getElementById("contact-phone").value;
+  let phoneNumber = document.getElementById("contact-phone").value.trim();
+if (!phoneNumber.startsWith("+91")) {
+  phoneNumber = "+91" + phoneNumber;
+}
   const token = localStorage.getItem('token'); 
   if (!contactName || !phoneNumber) {
     alert("Please fill in both fields.");
