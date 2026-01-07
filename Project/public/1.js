@@ -113,7 +113,7 @@ async function registerUser() {
     }
 
     try {
-        const response = await fetch('https://nook-your-comfort-corner.onrender.com//api/v1/users/register', { 
+        const response = await fetch('https://nook-your-comfort-corner.onrender.com/api/v1/users/register', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, username, password })
@@ -139,7 +139,7 @@ async function loginUser() {
     const password = document.getElementById('login-password').value;
 
     try {
-        const response = await fetch('https://nook-your-comfort-corner.onrender.com//api/v1/users/login', { 
+        const response = await fetch('https://nook-your-comfort-corner.onrender.com/api/v1/users/login', { 
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })

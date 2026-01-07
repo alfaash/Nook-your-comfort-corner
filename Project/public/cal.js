@@ -19,7 +19,7 @@ async function fetchJournalsFromBackend() {
     }
 
     try {
-        const response = await fetch('https://nook-your-comfort-corner.onrender.com//api/v1/journal', {
+        const response = await fetch('https://nook-your-comfort-corner.onrender.com/api/v1/journal', {
             method: 'GET',
             headers: { 
                 'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ window.deleteJournal = async (journalId) => {
     
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`https://nook-your-comfort-corner.onrender.com//api/v1/journal/${journalId}`, {
+        const response = await fetch(`https://nook-your-comfort-corner.onrender.com/api/v1/journal/${journalId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -135,7 +135,7 @@ window.deleteJournal = async (journalId) => {
     
     const token = localStorage.getItem('token');
     try {
-        const response = await fetch(`https://nook-your-comfort-corner.onrender.com//api/v1/journal/${journalId}`, {
+        const response = await fetch(`https://nook-your-comfort-corner.onrender.com/api/v1/journal/${journalId}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` }
         });
