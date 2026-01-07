@@ -70,7 +70,7 @@ function startSensors() {
 
 async function processAndDisplayAverages() {
   if (motionBuffer.length === 0 && orientationBuffer.length === 0) {
-    console.log("No sensor data captured yet...");
+    alert("No sensor data captured yet...");
     return;
   }
 
