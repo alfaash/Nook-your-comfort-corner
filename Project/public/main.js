@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
 let currentSensorData;
 let motionBuffer = [];
 let orientationBuffer = [];
+let isAlertCoolingDown = false;
 
 /* ------- PERMISSION ---------- */
 async function requestSensorPermission() {
@@ -49,22 +50,43 @@ async function requestSensorPermission() {
 function startSensors() {
   console.log("Tracking started...");
 
-  // Motion Tracking
+  // Motion Tracking (Updated with Watchdog Logic)
   window.addEventListener("devicemotion", (event) => {
     const acc = event.accelerationIncludingGravity;
+    // Capture Rotation Rate (Spin) for Tumble Detection
+    const rot = event.rotationRate || { alpha: 0, beta: 0, gamma: 0 };
+    
     if (acc && acc.x !== null) {
+      // 1. Calculate Instant Magnitude
+      const currentMagnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+
+      // 2. IMMEDIATE TRIGGER CHECK (The "Watchdog")
+      if (currentMagnitude > 20 && !isAlertCoolingDown) {
+        console.log("💥 IMPACT DETECTED! Sending raw data immediately...");
+        
+        isAlertCoolingDown = true;
+        setTimeout(() => isAlertCoolingDown = false, 5000);
+
+        // Send specific hard hit AND ROTATION to the backend
+        sendImmediateImpact(
+            { x: acc.x, y: acc.y, z: acc.z },
+            { alpha: rot.alpha, beta: rot.beta, gamma: rot.gamma } // ✅ SEND REAL GYRO
+        );
+      }
+
+      // 3. Normal Buffering
       motionBuffer.push({ x: acc.x, y: acc.y, z: acc.z });
     }
   });
 
-  // Orientation Tracking
+  // Orientation Tracking (Unchanged for background averages)
   window.addEventListener("deviceorientation", (event) => {
     if (event.alpha !== null) {
       orientationBuffer.push({ alpha: event.alpha, beta: event.beta, gamma: event.gamma });
     }
   });
 
-  //  10 seconds
+  // Background Average Logging
   setInterval(processAndDisplayAverages, 10000);
 }
 
@@ -122,6 +144,40 @@ async function processAndDisplayAverages() {
     }
   } catch (error) {
     console.log(error);
+  }
+}
+async function sendImmediateImpact(rawAcc, rawGyro) { // <--- Added rawGyro param
+  const token = localStorage.getItem('token');
+  
+  // Use the REAL gyro data passed from the event
+  // Fallback to 0 only if rawGyro is undefined (safety)
+  const gyroData = rawGyro || { alpha: 0, beta: 0, gamma: 0 };
+
+  currentSensorData = { accelerometer: rawAcc, gyroscope: gyroData };
+
+  try {
+    const response = await fetch('https://nook-your-comfort-corner.onrender.com/api/v1/motionData', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        sensorData: {
+          accelerometer: rawAcc,
+          gyroscope: gyroData // ✅ Sending Real Data
+        }
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.success && data.isAnomaly) {
+      console.log("🚨 Server confirmed impact! Starting Emergency UI...");
+      startUI(); 
+    }
+  } catch (error) {
+    console.error("Failed to send impact data:", error);
   }
 }
 
