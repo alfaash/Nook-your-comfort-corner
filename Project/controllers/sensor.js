@@ -75,27 +75,32 @@ const storeSensorData = async (req, res) => {
         let detectionReason = "Normal";
 
         // STATE DETECTION
-const isActive = averageForce > 12.0; 
+// 1. STATE DETECTION (Are you moving?)
+        const isActive = averageForce > 12.0; 
+
+        // 2. DYNAMIC THRESHOLDS
         const DYNAMIC_IMPACT_THRESHOLD = isActive ? 45.0 : 25.0;
         
-        // Base Tumble Requirement
+        // 🚀 FIX: Dynamic Critical Threshold
+        // If Active (Waving/Jogging): Raise bar to 60.0 to ignore "Hammer" motions.
+        // If Passive (Sitting): Keep at 50.0 to catch flat falls.
+        const CRITICAL_THRESHOLD = isActive ? 60.0 : 50.0; 
+
         const TUMBLE_ROTATION_THRESHOLD = 300.0; 
 
-        // 🛡️ THE "WRIST FLICK" FILTER
-        // If rotation is INSANELY high (> 500), it's likely a wrist flick.
-        // In that case, we require a CRITICAL impact (> 60) to believe it's a fall.
-        // Otherwise, we assume it's just a hand gesture.
+        // 🛡️ WRIST FLICK FILTER (Unchanged)
         const isWristFlick = gyroMagnitude > 500.0;
+
         if (isWristFlick && accMagnitude < 60.0) {
-             console.log("Ignored High-Speed Wrist Flick");
-             // Force isAnomaly to false -> Do nothing
+             console.log(`🛡️ Filtered: High-Speed Wrist Flick (Spin: ${gyroMagnitude.toFixed(0)})`);
              isAnomaly = false;
         }
         else {
-            // --- LAYER A: Critical Force ---
-            if (accMagnitude > 50.0) {
+            // --- LAYER A: Critical Force (Dynamic) ---
+            // Now uses CRITICAL_THRESHOLD (50 or 60) instead of hardcoded 50.
+            if (accMagnitude > CRITICAL_THRESHOLD) {
                 isAnomaly = true;
-                detectionReason = "Critical Velocity Impact (>50 m/s²)";
+                detectionReason = `Critical Velocity Impact (>${CRITICAL_THRESHOLD} m/s²)`;
             } 
             
             // --- LAYER B: Sensor Fusion ---
@@ -114,7 +119,6 @@ const isActive = averageForce > 12.0;
                 detectionReason = `Relative Spike (Val: ${accMagnitude.toFixed(1)} vs Avg: ${averageForce.toFixed(1)})`;
             }
         }
-
 
         // --- 5. LOGGING & RESPONSE ---
         if (isAnomaly) {
