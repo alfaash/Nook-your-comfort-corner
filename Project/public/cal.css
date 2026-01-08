@@ -232,3 +232,132 @@ audio {
 .delete-btn:hover {
     background-color: #cc0000;
 }
+/* =========================================
+   🚨 EMERGENCY ALERT UI STYLES
+   (Required for main.js Fall Detection)
+   ========================================= */
+
+/* The full-screen dark background */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85); /* Dark dimmed background */
+    backdrop-filter: blur(8px);       /* Blurs the content behind */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;                   /* Ensures it sits on top of everything */
+    transition: all 0.3s ease;
+}
+
+/* Logic to hide the alert by default */
+.hidden {
+    display: none !important;
+}
+
+/* The Alert Card Box */
+.overlay-content {
+    background: rgba(25, 25, 25, 0.95);
+    padding: 40px;
+    border-radius: 28px;
+    text-align: center;
+    width: 90%;
+    max-width: 420px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: 'Segoe UI', sans-serif; /* Ensures font consistency */
+}
+
+/* The Siren Icon 🚨 */
+.alert-icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+    display: inline-block;
+    animation: shake 0.5s infinite;
+}
+
+/* Text Styles */
+.overlay-content h1 {
+    color: #ffffff;
+    font-size: 24px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.overlay-content p {
+    color: #a0a0a0;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+/* The Big Countdown Number */
+#countdown-number {
+    font-size: 80px;
+    font-weight: 800;
+    color: #ff4b2b;
+    text-shadow: 0 0 20px rgba(255, 75, 43, 0.5);
+    margin: 10px 0;
+    font-family: monospace; /* Monospace keeps numbers from jumping */
+}
+
+/* The Progress Bar Container */
+.progress-container {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    height: 8px;
+    border-radius: 10px;
+    margin-bottom: 35px;
+    overflow: hidden;
+}
+
+/* The Red Filling Bar */
+#progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff416c, #ff4b2b);
+    width: 100%;
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.5);
+    transition: width 1s linear;
+}
+
+/* The "I AM OK" Button */
+#cancel-btn {
+    background: #00b894;
+    color: white;
+    border: none;
+    padding: 18px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 10px 20px rgba(0, 184, 148, 0.2);
+}
+
+#cancel-btn:hover {
+    background: #55efc4;
+    transform: translateY(-2px);
+}
+
+#cancel-btn:active {
+    transform: translateY(0);
+}
+
+/* Animations */
+@keyframes slideIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+    100% { transform: rotate(0deg); }
+}
