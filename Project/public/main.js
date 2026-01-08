@@ -61,7 +61,7 @@ function startSensors() {
       const currentMagnitude = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
 
       // 2. IMMEDIATE TRIGGER CHECK (The "Watchdog")
-      if (currentMagnitude > 25 && !isAlertCoolingDown) {
+      if (currentMagnitude > 35 && !isAlertCoolingDown) {
         console.log("💥 IMPACT DETECTED! Sending raw data immediately...");
         
         isAlertCoolingDown = true;

@@ -70,41 +70,38 @@ const storeSensorData = async (req, res) => {
         });
 
 
-        // --- 4. DYNAMIC DETECTION LOGIC 🧠 ---
+// --- 4. DYNAMIC DETECTION LOGIC 🧠 ---
         let isAnomaly = false;
         let detectionReason = "Normal";
 
-        // STATE DETECTION: Is the user active?
-        // If average force is > 12, they are likely walking/jogging.
-        const isActive = averageForce > 12.0; 
+        // STATE DETECTION
+        // If average > 13, user is definitely running/active.
+        const isActive = averageForce > 13.0; 
 
-        // DYNAMIC THRESHOLD (The "Runner's Fix")
-        // If Active: We need a harder hit (25g) to trigger (filters jogging noise).
-        // If Passive: A moderate hit (15g) is enough (catches soft falls/fainting).
-        const DYNAMIC_IMPACT_THRESHOLD = isActive ? 25.0 : 15.0;
+        // DYNAMIC THRESHOLD (The "Active Life" Fix)
+        // If Active: Require a massive 40g hit (Running creates 25-30g naturally).
+        // If Passive: Require 20g (Sitting/Standing).
+        const DYNAMIC_IMPACT_THRESHOLD = isActive ? 40.0 : 20.0;
 
-        // --- LAYER A: Critical Force (The "Slam") ---
-        // 30g is dangerous regardless of context or activity. Always triggers.
-        if (accMagnitude > 30.0) {
+        // --- LAYER A: Critical Force ---
+        // Raised to 50. This is a "Concrete Hit".
+        if (accMagnitude > 50.0) {
             isAnomaly = true;
-            detectionReason = "Critical Velocity Impact (>30 m/s²)";
+            detectionReason = "Critical Velocity Impact (>50 m/s²)";
         } 
         
-        // --- LAYER B: Sensor Fusion (The "Tumble") ---
-        // Checks for Impact + High Rotation (Tumbling).
-        // Uses Dynamic Threshold to avoid triggering on every jogging step.
+        // --- LAYER B: Sensor Fusion (Tumble) ---
+        // Tumble requires hitting the Dynamic Threshold
         else if (accMagnitude > DYNAMIC_IMPACT_THRESHOLD && gyroMagnitude > 300.0) {
             isAnomaly = true;
             detectionReason = `Tumble Detected (Active: ${isActive})`;
         }
 
-        // --- LAYER C: Relative Spike (The "Soft Fall" & "Desk Slam" Fix) ---
-        // Checks if force is double the baseline AND meets minimum threshold.
-        // FIX: Added 'gyroMagnitude > 50' to ignore Desk Slams (which have 0 spin).
+        // --- LAYER C: Relative Spike ---
         else if (
-            accMagnitude > (averageForce * 2.0) && // Must be a spike relative to context
-            accMagnitude > DYNAMIC_IMPACT_THRESHOLD && // Must meet absolute minimum
-            gyroMagnitude > 50.0 // Must have SOME rotation (Anti-Desk-Slam)
+            accMagnitude > (averageForce * 2.0) && 
+            accMagnitude > DYNAMIC_IMPACT_THRESHOLD && 
+            gyroMagnitude > 100.0 
         ) {
             isAnomaly = true;
             detectionReason = `Relative Spike (Val: ${accMagnitude.toFixed(1)} vs Avg: ${averageForce.toFixed(1)})`;
