@@ -75,39 +75,44 @@ const storeSensorData = async (req, res) => {
         let detectionReason = "Normal";
 
         // STATE DETECTION
-        const isActive = averageForce > 12.0; 
-
-        // DYNAMIC IMPACT THRESHOLD
-        // Keep these reasonable to catch falls
-        const DYNAMIC_IMPACT_THRESHOLD = isActive ? 40.0 : 25.0;
-
-        // 🚀 FIX 2: ROTATION THRESHOLD (The Secret Sauce)
-        // Raise this to 300.0. 
-        // This instantly filters out waves (122), pickups (80), and shaky hands.
-        // Only a chaotic tumble passes this check.
+const isActive = averageForce > 12.0; 
+        const DYNAMIC_IMPACT_THRESHOLD = isActive ? 45.0 : 25.0;
+        
+        // Base Tumble Requirement
         const TUMBLE_ROTATION_THRESHOLD = 300.0; 
 
-        // --- LAYER A: Critical Force ---
-        // If it's a car crash level hit (>50), we don't care about rotation.
-        if (accMagnitude > 50.0) {
-            isAnomaly = true;
-            detectionReason = "Critical Velocity Impact (>50 m/s²)";
-        } 
-        
-        // --- LAYER B: Sensor Fusion (Tumble) ---
-        else if (accMagnitude > DYNAMIC_IMPACT_THRESHOLD && gyroMagnitude > TUMBLE_ROTATION_THRESHOLD) {
-            isAnomaly = true;
-            detectionReason = `Tumble Detected (Active: ${isActive})`;
+        // 🛡️ THE "WRIST FLICK" FILTER
+        // If rotation is INSANELY high (> 500), it's likely a wrist flick.
+        // In that case, we require a CRITICAL impact (> 60) to believe it's a fall.
+        // Otherwise, we assume it's just a hand gesture.
+        const isWristFlick = gyroMagnitude > 500.0;
+        if (isWristFlick && accMagnitude < 60.0) {
+             console.log("Ignored High-Speed Wrist Flick");
+             // Force isAnomaly to false -> Do nothing
+             isAnomaly = false;
         }
+        else {
+            // --- LAYER A: Critical Force ---
+            if (accMagnitude > 50.0) {
+                isAnomaly = true;
+                detectionReason = "Critical Velocity Impact (>50 m/s²)";
+            } 
+            
+            // --- LAYER B: Sensor Fusion ---
+            else if (accMagnitude > DYNAMIC_IMPACT_THRESHOLD && gyroMagnitude > TUMBLE_ROTATION_THRESHOLD) {
+                isAnomaly = true;
+                detectionReason = `Tumble Detected (Active: ${isActive})`;
+            }
 
-        // --- LAYER C: Relative Spike ---
-        else if (
-            accMagnitude > (averageForce * 2.0) && 
-            accMagnitude > DYNAMIC_IMPACT_THRESHOLD && 
-            gyroMagnitude > TUMBLE_ROTATION_THRESHOLD // <--- Apply 300 here too!
-        ) {
-            isAnomaly = true;
-            detectionReason = `Relative Spike (Val: ${accMagnitude.toFixed(1)} vs Avg: ${averageForce.toFixed(1)})`;
+            // --- LAYER C: Relative Spike ---
+            else if (
+                accMagnitude > (averageForce * 2.0) && 
+                accMagnitude > DYNAMIC_IMPACT_THRESHOLD && 
+                gyroMagnitude > TUMBLE_ROTATION_THRESHOLD 
+            ) {
+                isAnomaly = true;
+                detectionReason = `Relative Spike (Val: ${accMagnitude.toFixed(1)} vs Avg: ${averageForce.toFixed(1)})`;
+            }
         }
 
 

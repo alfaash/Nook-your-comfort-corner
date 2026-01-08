@@ -173,6 +173,7 @@ async function sendImmediateImpact(rawAcc, rawGyro) { // <--- Added rawGyro para
     const data = await response.json();
     
     if (data.success && data.isAnomaly) {
+      console.log(data);
       console.log("🚨 Server confirmed impact! Starting Emergency UI...");
       startUI(); 
     }
