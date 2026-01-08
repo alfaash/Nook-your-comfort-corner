@@ -25,6 +25,21 @@
             </div>
     </div>
 </div>
+  <!--alert-->
+  <div id="emergency-overlay" class="overlay hidden">
+    <div class="overlay-content">
+        <div class="alert-icon">🚨</div>
+        <h1>Impact Detected!</h1>
+        <p>Sending emergency alerts in:</p>
+        <div id="countdown-number">30</div>
+        
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+
+        <button id="cancel-btn" onclick="cancelAlert()">I AM OK (CANCEL)</button>
+    </div>
+</div>
 
   <script src="main.js"></script>
     <script src="cal.js"></script>

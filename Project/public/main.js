@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // if (modal) modal.classList.remove("hidden");
 });
 
+let noSensorFoundAlert = false;
 let currentSensorData;
 let motionBuffer = [];
 let orientationBuffer = [];
@@ -92,7 +93,10 @@ function startSensors() {
 
 async function processAndDisplayAverages() {
   if (motionBuffer.length === 0 && orientationBuffer.length === 0) {
-    alert("No sensor data captured yet...");
+    if(!noSensorFoundAlert){
+      alert("No Sensor Found on your device. Alert Detection will not work!");
+      noSensorFoundAlert = true;
+    }
     return;
   }
 
