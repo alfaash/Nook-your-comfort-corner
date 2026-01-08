@@ -75,24 +75,27 @@ const storeSensorData = async (req, res) => {
         let detectionReason = "Normal";
 
         // STATE DETECTION
-        // If average > 13, user is definitely running/active.
-        const isActive = averageForce > 13.0; 
+        const isActive = averageForce > 12.0; 
 
-        // DYNAMIC THRESHOLD (The "Active Life" Fix)
-        // If Active: Require a massive 40g hit (Running creates 25-30g naturally).
-        // If Passive: Require 20g (Sitting/Standing).
-        const DYNAMIC_IMPACT_THRESHOLD = isActive ? 40.0 : 20.0;
+        // DYNAMIC IMPACT THRESHOLD
+        // Keep these reasonable to catch falls
+        const DYNAMIC_IMPACT_THRESHOLD = isActive ? 40.0 : 25.0;
+
+        // 🚀 FIX 2: ROTATION THRESHOLD (The Secret Sauce)
+        // Raise this to 300.0. 
+        // This instantly filters out waves (122), pickups (80), and shaky hands.
+        // Only a chaotic tumble passes this check.
+        const TUMBLE_ROTATION_THRESHOLD = 300.0; 
 
         // --- LAYER A: Critical Force ---
-        // Raised to 50. This is a "Concrete Hit".
+        // If it's a car crash level hit (>50), we don't care about rotation.
         if (accMagnitude > 50.0) {
             isAnomaly = true;
             detectionReason = "Critical Velocity Impact (>50 m/s²)";
         } 
         
         // --- LAYER B: Sensor Fusion (Tumble) ---
-        // Tumble requires hitting the Dynamic Threshold
-        else if (accMagnitude > DYNAMIC_IMPACT_THRESHOLD && gyroMagnitude > 300.0) {
+        else if (accMagnitude > DYNAMIC_IMPACT_THRESHOLD && gyroMagnitude > TUMBLE_ROTATION_THRESHOLD) {
             isAnomaly = true;
             detectionReason = `Tumble Detected (Active: ${isActive})`;
         }
@@ -101,7 +104,7 @@ const storeSensorData = async (req, res) => {
         else if (
             accMagnitude > (averageForce * 2.0) && 
             accMagnitude > DYNAMIC_IMPACT_THRESHOLD && 
-            gyroMagnitude > 100.0 
+            gyroMagnitude > TUMBLE_ROTATION_THRESHOLD // <--- Apply 300 here too!
         ) {
             isAnomaly = true;
             detectionReason = `Relative Spike (Val: ${accMagnitude.toFixed(1)} vs Avg: ${averageForce.toFixed(1)})`;
